@@ -1,0 +1,4 @@
+Name: filecoin
+Version: 4446ff8a1bb9115703010e6fa7e94b7f7dbf5618
+Description: C bindings for filecoin
+Libs:  -lOpenCL -lOpenCL -lutil -ldl -lutil -ldl -lrt -lpthread -lgcc_s -lc -lm -lrt -lpthread -lutil -lutil
