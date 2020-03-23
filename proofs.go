@@ -268,6 +268,35 @@ func WriteWithoutAlignment(
 	return abi.UnpaddedPieceSize(resp.TotalWriteUnpadded), commP, nil
 }
 
+// SealPreCommitPhase1WithCommD
+func GenerateCommDTree(
+	proofType abi.RegisteredSealProof,
+	cacheDirPath string,
+	stagedSectorPath string,
+	pieces []abi.PieceInfo,
+) (phase1Output []byte, err error) {
+	sp, err := toFilRegisteredSealProof(proofType)
+	if err != nil {
+		return nil, err
+	}
+
+	filPublicPieceInfos, filPublicPieceInfosLen, err := toFilPublicPieceInfos(pieces)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := generated.FilGenerateCommDTree(sp, cacheDirPath, stagedSectorPath, filPublicPieceInfos, filPublicPieceInfosLen)
+	resp.Deref()
+
+	defer generated.FilDestroySealPreCommitPhase1Response(resp)
+
+	if resp.StatusCode != generated.FCPResponseStatusFCPNoError {
+		return nil, errors.New(generated.RawString(resp.ErrorMsg).Copy())
+	}
+
+	return copyBytes(resp.SealPreCommitPhase1OutputPtr, resp.SealPreCommitPhase1OutputLen), nil
+}
+
 // SealPreCommitPhase1
 func SealPreCommitPhase1(
 	proofType abi.RegisteredSealProof,
@@ -278,6 +307,21 @@ func SealPreCommitPhase1(
 	minerID abi.ActorID,
 	ticket abi.SealRandomness,
 	pieces []abi.PieceInfo,
+) (phase1Output []byte, err error) {
+	return SealPreCommitPhase1WithCommD(proofType, cacheDirPath, stagedSectorPath, sealedSectorPath, sectorNum, minerID, ticket, pieces, nil)
+}
+
+// SealPreCommitPhase1WithCommD
+func SealPreCommitPhase1WithCommD(
+	proofType abi.RegisteredSealProof,
+	cacheDirPath string,
+	stagedSectorPath string,
+	sealedSectorPath string,
+	sectorNum abi.SectorNumber,
+	minerID abi.ActorID,
+	ticket abi.SealRandomness,
+	pieces []abi.PieceInfo,
+	phase1OutputPartial []byte,
 ) (phase1Output []byte, err error) {
 	sp, err := toFilRegisteredSealProof(proofType)
 	if err != nil {
@@ -294,7 +338,12 @@ func SealPreCommitPhase1(
 		return nil, err
 	}
 
-	resp := generated.FilSealPreCommitPhase1(sp, cacheDirPath, stagedSectorPath, sealedSectorPath, uint64(sectorNum), proverID, to32ByteArray(ticket), filPublicPieceInfos, filPublicPieceInfosLen)
+	var resp *generated.FilSealPreCommitPhase1Response
+	if len(phase1OutputPartial) == 0 {
+		resp = generated.FilSealPreCommitPhase1(sp, cacheDirPath, stagedSectorPath, sealedSectorPath, uint64(sectorNum), proverID, to32ByteArray(ticket), filPublicPieceInfos, filPublicPieceInfosLen)
+	} else {
+		resp = generated.FilSealPreCommitPhase1WithCommD(sp, cacheDirPath, stagedSectorPath, sealedSectorPath, uint64(sectorNum), proverID, to32ByteArray(ticket), filPublicPieceInfos, filPublicPieceInfosLen, phase1OutputPartial, uint(len(phase1OutputPartial)))
+	}
 	resp.Deref()
 
 	defer generated.FilDestroySealPreCommitPhase1Response(resp)
@@ -513,11 +562,67 @@ func GenerateWinningPoStSectorChallenge(
 	return out, nil
 }
 
+func PostConfig(postProofType abi.RegisteredPoStProof) (challengeCount, sectorCount uint64, err error) {
+	pp, err := toFilRegisteredPoStProof(postProofType)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	resp := generated.FilPostConfig(pp)
+	resp.Deref()
+
+	defer generated.FilDestroyPostConfigResponse(resp)
+
+	if resp.StatusCode != generated.FCPResponseStatusFCPNoError {
+		return 0, 0, errors.New(generated.RawString(resp.ErrorMsg).Copy())
+	}
+
+	return uint64(resp.ChallengeCount), uint64(resp.SectorCount), nil
+}
+
+func TreeProve(
+	privateSectorInfo SortedPrivateSectorInfo,
+	randomness abi.PoStRandomness,
+	j, i []uint64,
+	numSectorsPerChunk uint64,
+	isWinningPoSt bool,
+) (string, error) {
+	typ := "winning"
+	if !isWinningPoSt {
+		typ = "window"
+	}
+	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), typ)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to create private replica info array for FFI")
+	}
+	defer free()
+
+	resp := generated.FilTreeProve(
+		to32ByteArray(randomness),
+		filReplicas, filReplicasLen,
+		j,
+		uint(len(j)),
+		i,
+		uint(len(i)),
+		numSectorsPerChunk,
+	)
+	resp.Deref()
+
+	defer generated.FilDestroyStringResponse(resp)
+
+	if resp.StatusCode != generated.FCPResponseStatusFCPNoError {
+		return "", errors.New(generated.RawString(resp.ErrorMsg).Copy())
+	}
+
+	return generated.RawString(resp.StringVal).Copy(), nil
+}
+
 // GenerateWinningPoSt
 func GenerateWinningPoSt(
 	minerID abi.ActorID,
 	privateSectorInfo SortedPrivateSectorInfo,
 	randomness abi.PoStRandomness,
+	proofsStr string,
 ) ([]proof.PoStProof, error) {
 	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), "winning")
 	if err != nil {
@@ -534,6 +639,7 @@ func GenerateWinningPoSt(
 		to32ByteArray(randomness),
 		filReplicas, filReplicasLen,
 		proverID,
+		proofsStr,
 	)
 	resp.Deref()
 	resp.ProofsPtr = make([]generated.FilPoStProof, resp.ProofsLen)
@@ -558,6 +664,7 @@ func GenerateWindowPoSt(
 	minerID abi.ActorID,
 	privateSectorInfo SortedPrivateSectorInfo,
 	randomness abi.PoStRandomness,
+	proofsStr string,
 ) ([]proof.PoStProof, []abi.SectorNumber, error) {
 	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), "window")
 	if err != nil {
@@ -570,7 +677,7 @@ func GenerateWindowPoSt(
 		return nil, nil, err
 	}
 
-	resp := generated.FilGenerateWindowPost(to32ByteArray(randomness), filReplicas, filReplicasLen, proverID)
+	resp := generated.FilGenerateWindowPost(to32ByteArray(randomness), filReplicas, filReplicasLen, proverID, proofsStr)
 	resp.Deref()
 	resp.ProofsPtr = make([]generated.FilPoStProof, resp.ProofsLen)
 	resp.Deref()
