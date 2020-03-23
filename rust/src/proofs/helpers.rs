@@ -113,6 +113,56 @@ pub unsafe fn to_private_replica_info_map(
     Ok(map)
 }
 
+pub unsafe fn to_private_replica_info_vec(
+    replicas_ptr: *const fil_PrivateReplicaInfo,
+    replicas_len: libc::size_t,
+) -> Result<Vec<(SectorId, PrivateReplicaInfo)>> {
+    use rayon::prelude::*;
+
+    ensure!(!replicas_ptr.is_null(), "replicas_ptr must not be null");
+
+    let replicas: Vec<_> = from_raw_parts(replicas_ptr, replicas_len)
+        .iter()
+        .map(|ffi_info| {
+            let cache_dir_path = c_str_to_pbuf(ffi_info.cache_dir_path);
+            let replica_path = c_str_to_rust_str(ffi_info.replica_path).to_string();
+
+            PrivateReplicaInfoTmp {
+                registered_proof: ffi_info.registered_proof,
+                cache_dir_path,
+                comm_r: ffi_info.comm_r,
+                replica_path: PathBuf::from(replica_path),
+                sector_id: ffi_info.sector_id,
+            }
+        })
+        .collect();
+
+    let map = replicas
+        .into_par_iter()
+        .map(|info| {
+            let PrivateReplicaInfoTmp {
+                registered_proof,
+                cache_dir_path,
+                comm_r,
+                replica_path,
+                sector_id,
+            } = info;
+
+            (
+                SectorId::from(sector_id),
+                PrivateReplicaInfo::new(
+                    registered_proof.into(),
+                    comm_r,
+                    cache_dir_path,
+                    replica_path,
+                ),
+            )
+        })
+        .collect();
+
+    Ok(map)
+}
+
 pub unsafe fn c_to_rust_post_proofs(
     post_proofs_ptr: *const fil_PoStProof,
     post_proofs_len: libc::size_t,
