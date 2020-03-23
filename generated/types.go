@@ -300,7 +300,13 @@ type FilPrivateReplicaInfo struct {
 	allocs81a31e9b  interface{}
 }
 
-// FilPublicReplicaInfo as declared in filecoin-ffi/filcrypto.h:269
+// FilWindowMerkleTreeProofCallback type as declared in filecoin-ffi/filcrypto.h:265
+type FilWindowMerkleTreeProofCallback func(numSectorsPerChunk uint64, proof []byte, proofLen uint64) uint64
+
+// FilWinningMerkleTreeProofCallback type as declared in filecoin-ffi/filcrypto.h:267
+type FilWinningMerkleTreeProofCallback func(numSectorsPerChunk uint64, proof []byte, proofLen uint64) uint64
+
+// FilPublicReplicaInfo as declared in filecoin-ffi/filcrypto.h:273
 type FilPublicReplicaInfo struct {
 	RegisteredProof FilRegisteredPoStProof
 	CommR           [32]byte

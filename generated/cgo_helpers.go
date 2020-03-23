@@ -3191,6 +3191,94 @@ func (x *FilPrivateReplicaInfo) Deref() {
 	x.SectorId = (uint64)(x.ref81a31e9b.sector_id)
 }
 
+func (x FilWindowMerkleTreeProofCallback) PassRef() (ref *C.fil_WindowMerkleTreeProofCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filWindowMerkleTreeProofCallback9C3E2DBCFunc == nil {
+		filWindowMerkleTreeProofCallback9C3E2DBCFunc = x
+	}
+	return (*C.fil_WindowMerkleTreeProofCallback)(C.fil_WindowMerkleTreeProofCallback_9c3e2dbc), nil
+}
+
+func (x FilWindowMerkleTreeProofCallback) PassValue() (ref C.fil_WindowMerkleTreeProofCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filWindowMerkleTreeProofCallback9C3E2DBCFunc == nil {
+		filWindowMerkleTreeProofCallback9C3E2DBCFunc = x
+	}
+	return (C.fil_WindowMerkleTreeProofCallback)(C.fil_WindowMerkleTreeProofCallback_9c3e2dbc), nil
+}
+
+func NewFilWindowMerkleTreeProofCallbackRef(ref unsafe.Pointer) *FilWindowMerkleTreeProofCallback {
+	return (*FilWindowMerkleTreeProofCallback)(ref)
+}
+
+//export filWindowMerkleTreeProofCallback9C3E2DBC
+func filWindowMerkleTreeProofCallback9C3E2DBC(cnumSectorsPerChunk C.uintptr_t, cproof *C.char, cproofLen C.uintptr_t) C.uintptr_t {
+	if filWindowMerkleTreeProofCallback9C3E2DBCFunc != nil {
+		numSectorsPerChunk9c3e2dbc := (uint64)(cnumSectorsPerChunk)
+		var proof9c3e2dbc []byte
+		hxf95e7c8 := (*sliceHeader)(unsafe.Pointer(&proof9c3e2dbc))
+		hxf95e7c8.Data = unsafe.Pointer(cproof)
+		hxf95e7c8.Cap = 0x7fffffff
+		// hxf95e7c8.Len = ?
+
+		proofLen9c3e2dbc := (uint64)(cproofLen)
+		ret9c3e2dbc := filWindowMerkleTreeProofCallback9C3E2DBCFunc(numSectorsPerChunk9c3e2dbc, proof9c3e2dbc, proofLen9c3e2dbc)
+		ret, _ := (C.uintptr_t)(ret9c3e2dbc), cgoAllocsUnknown
+		return ret
+	}
+	panic("callback func has not been set (race?)")
+}
+
+var filWindowMerkleTreeProofCallback9C3E2DBCFunc FilWindowMerkleTreeProofCallback
+
+func (x FilWinningMerkleTreeProofCallback) PassRef() (ref *C.fil_WinningMerkleTreeProofCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filWinningMerkleTreeProofCallback26929706Func == nil {
+		filWinningMerkleTreeProofCallback26929706Func = x
+	}
+	return (*C.fil_WinningMerkleTreeProofCallback)(C.fil_WinningMerkleTreeProofCallback_26929706), nil
+}
+
+func (x FilWinningMerkleTreeProofCallback) PassValue() (ref C.fil_WinningMerkleTreeProofCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filWinningMerkleTreeProofCallback26929706Func == nil {
+		filWinningMerkleTreeProofCallback26929706Func = x
+	}
+	return (C.fil_WinningMerkleTreeProofCallback)(C.fil_WinningMerkleTreeProofCallback_26929706), nil
+}
+
+func NewFilWinningMerkleTreeProofCallbackRef(ref unsafe.Pointer) *FilWinningMerkleTreeProofCallback {
+	return (*FilWinningMerkleTreeProofCallback)(ref)
+}
+
+//export filWinningMerkleTreeProofCallback26929706
+func filWinningMerkleTreeProofCallback26929706(cnumSectorsPerChunk C.uintptr_t, cproof *C.char, cproofLen C.uintptr_t) C.uintptr_t {
+	if filWinningMerkleTreeProofCallback26929706Func != nil {
+		numSectorsPerChunk26929706 := (uint64)(cnumSectorsPerChunk)
+		var proof26929706 []byte
+		hxff2234b := (*sliceHeader)(unsafe.Pointer(&proof26929706))
+		hxff2234b.Data = unsafe.Pointer(cproof)
+		hxff2234b.Cap = 0x7fffffff
+		// hxff2234b.Len = ?
+
+		proofLen26929706 := (uint64)(cproofLen)
+		ret26929706 := filWinningMerkleTreeProofCallback26929706Func(numSectorsPerChunk26929706, proof26929706, proofLen26929706)
+		ret, _ := (C.uintptr_t)(ret26929706), cgoAllocsUnknown
+		return ret
+	}
+	panic("callback func has not been set (race?)")
+}
+
+var filWinningMerkleTreeProofCallback26929706Func FilWinningMerkleTreeProofCallback
+
 // allocFilPublicReplicaInfoMemory allocates memory for type C.fil_PublicReplicaInfo in C.
 // The caller is responsible for freeing the this memory via C.free.
 func allocFilPublicReplicaInfoMemory(n int) unsafe.Pointer {
