@@ -205,7 +205,7 @@ func WorkflowProofsLifecycle(t TestHelper) {
 		SealedCID:       sealedCID,
 	}}
 
-	candidatesWithTicketsA, err := GenerateCandidates(minerID, randomness[:], challengeCount, privateInfo)
+	candidatesWithTicketsA, err := GenerateCandidates(minerID, randomness[:], challengeCount, privateInfo, nil) // TODO
 	t.RequireNoError(err)
 
 	candidatesA := make([]abi.PoStCandidate, len(candidatesWithTicketsA))
@@ -218,7 +218,7 @@ func WorkflowProofsLifecycle(t TestHelper) {
 	_, err = FinalizeTicket(candidatesA[0].PartialTicket)
 	t.RequireNoError(err)
 
-	proofs, err := GeneratePoSt(minerID, privateInfo, randomness[:], candidatesA)
+	proofs, err := GeneratePoSt(minerID, privateInfo, randomness[:], candidatesA, nil) // TODO
 	t.RequireNoError(err)
 
 	isValid, err = VerifyPoSt(abi.PoStVerifyInfo{

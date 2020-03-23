@@ -432,12 +432,15 @@ func FinalizeTicket(partialTicket abi.PartialTicket) ([32]byte, error) {
 	return out, nil
 }
 
+type NetReadCallback = generated.FilNetReadCallback
+
 // GenerateCandidates
 func GenerateCandidates(
 	minerID abi.ActorID,
 	randomness abi.PoStRandomness,
 	challengeCount uint64,
 	privateSectorInfo SortedPrivateSectorInfo,
+	netReadCallback NetReadCallback,
 ) ([]PoStCandidateWithTicket, error) {
 	filReplicas, filReplicasLen, err := toFilPrivateReplicaInfos(privateSectorInfo.Values())
 	if err != nil {
@@ -449,7 +452,7 @@ func GenerateCandidates(
 		return nil, err
 	}
 
-	resp := generated.FilGenerateCandidates(to32ByteArray(randomness), challengeCount, filReplicas, filReplicasLen, proverID)
+	resp := generated.FilGenerateCandidates(to32ByteArray(randomness), challengeCount, filReplicas, filReplicasLen, proverID, netReadCallback)
 	resp.Deref()
 	resp.CandidatesPtr = make([]generated.FilCandidate, resp.CandidatesLen)
 	resp.Deref()
@@ -469,6 +472,7 @@ func GeneratePoSt(
 	privateSectorInfo SortedPrivateSectorInfo,
 	randomness abi.PoStRandomness,
 	winners []abi.PoStCandidate,
+	netReadCallback NetReadCallback,
 ) ([]abi.PoStProof, error) {
 	filReplicas, filReplicasLen, err := toFilPrivateReplicaInfos(privateSectorInfo.Values())
 	if err != nil {
@@ -482,7 +486,7 @@ func GeneratePoSt(
 
 	filPoStCandidates, filPoStCandidatesLen := toFilPoStCandidates(winners)
 
-	resp := generated.FilGeneratePost(to32ByteArray(randomness), filReplicas, filReplicasLen, filPoStCandidates, filPoStCandidatesLen, proverID)
+	resp := generated.FilGeneratePost(to32ByteArray(randomness), filReplicas, filReplicasLen, filPoStCandidates, filPoStCandidatesLen, proverID, netReadCallback)
 	resp.Deref()
 	resp.ProofsPtr = make([]generated.FilPoStProof, resp.ProofsLen)
 	resp.Deref()

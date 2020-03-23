@@ -677,6 +677,8 @@ pub unsafe extern "C" fn fil_clear_cache(
     })
 }
 
+pub type fil_NetReadCallback = fn(sector_id: u64, cache_id: *const libc::c_char, offset: u64, size: u64, buf: *mut libc::c_char) -> u64;
+
 /// TODO: document
 ///
 #[no_mangle]
@@ -686,6 +688,7 @@ pub unsafe extern "C" fn fil_generate_candidates(
     replicas_ptr: *const fil_PrivateReplicaInfo,
     replicas_len: libc::size_t,
     prover_id: fil_32ByteArray,
+    net_read: fil_NetReadCallback,
 ) -> *mut fil_GenerateCandidatesResponse {
     catch_panic_response(|| {
         init_log();
@@ -695,11 +698,14 @@ pub unsafe extern "C" fn fil_generate_candidates(
         let mut response = fil_GenerateCandidatesResponse::default();
 
         let result = to_private_replica_info_map(replicas_ptr, replicas_len).and_then(|rs| {
+            let mut net_reader = filecoin_proofs_api::post::NetReader::default();
+            net_reader.net_read_cb = Some(net_read);
             filecoin_proofs_api::post::generate_candidates(
                 &randomness.inner,
                 challenge_count,
                 &rs,
                 prover_id.inner,
+                net_reader,
             )
         });
 
@@ -742,6 +748,7 @@ pub unsafe extern "C" fn fil_generate_post(
     winners_ptr: *const fil_Candidate,
     winners_len: libc::size_t,
     prover_id: fil_32ByteArray,
+    net_read: fil_NetReadCallback,
 ) -> *mut fil_GeneratePoStResponse {
     catch_panic_response(|| {
         init_log();
@@ -751,11 +758,14 @@ pub unsafe extern "C" fn fil_generate_post(
         let mut response = fil_GeneratePoStResponse::default();
 
         let result = to_private_replica_info_map(replicas_ptr, replicas_len).and_then(|rs| {
+            let mut net_reader = filecoin_proofs_api::post::NetReader::default();
+            net_reader.net_read_cb = Some(net_read);
             filecoin_proofs_api::post::generate_post(
                 &randomness.inner,
                 &rs,
                 c_to_rust_candidates(winners_ptr, winners_len)?,
                 prover_id.inner,
+                net_reader,
             )
         });
 
