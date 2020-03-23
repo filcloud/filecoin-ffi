@@ -7,3 +7,9 @@
 
 #define __CGOGEN 1
 
+// fil_WindowMerkleTreeProofCallback_9c3e2dbc is a proxy for callback fil_WindowMerkleTreeProofCallback.
+unsigned long int fil_WindowMerkleTreeProofCallback_9c3e2dbc(unsigned long int num_sectors_per_chunk, char* proof, unsigned long int proof_len);
+
+// fil_WinningMerkleTreeProofCallback_26929706 is a proxy for callback fil_WinningMerkleTreeProofCallback.
+unsigned long int fil_WinningMerkleTreeProofCallback_26929706(unsigned long int num_sectors_per_chunk, char* proof, unsigned long int proof_len);
+
