@@ -7,3 +7,6 @@
 
 #define __CGOGEN 1
 
+// fil_NetReadCallback_eda104b4 is a proxy for callback fil_NetReadCallback.
+unsigned long int fil_NetReadCallback_eda104b4(unsigned long int sector_id, char* cache_id, unsigned long int offset, unsigned long int size, char* buf);
+

@@ -251,6 +251,35 @@ func WriteWithoutAlignment(
 	return abi.UnpaddedPieceSize(resp.TotalWriteUnpadded), commcid.PieceCommitmentV1ToCID(resp.CommP[:]), nil
 }
 
+// SealPreCommitPhase1WithCommD
+func GenerateCommDTree(
+	proofType abi.RegisteredProof,
+	cacheDirPath string,
+	stagedSectorPath string,
+	pieces []abi.PieceInfo,
+) (phase1Output []byte, err error) {
+	sp, err := toFilRegisteredSealProof(proofType)
+	if err != nil {
+		return nil, err
+	}
+
+	filPublicPieceInfos, filPublicPieceInfosLen, err := toFilPublicPieceInfos(pieces)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := generated.FilGenerateCommDTree(sp, cacheDirPath, stagedSectorPath, filPublicPieceInfos, filPublicPieceInfosLen)
+	resp.Deref()
+
+	defer generated.FilDestroySealPreCommitPhase1Response(resp)
+
+	if resp.StatusCode != generated.FCPResponseStatusFCPNoError {
+		return nil, errors.New(generated.RawString(resp.ErrorMsg).Copy())
+	}
+
+	return []byte(toGoStringCopy(resp.SealPreCommitPhase1OutputPtr, resp.SealPreCommitPhase1OutputLen)), nil
+}
+
 // SealPreCommitPhase1
 func SealPreCommitPhase1(
 	proofType abi.RegisteredProof,
@@ -261,6 +290,21 @@ func SealPreCommitPhase1(
 	minerID abi.ActorID,
 	ticket abi.SealRandomness,
 	pieces []abi.PieceInfo,
+) (phase1Output []byte, err error) {
+	return SealPreCommitPhase1WithCommD(proofType, cacheDirPath, stagedSectorPath, sealedSectorPath, sectorNum, minerID, ticket, pieces, nil)
+}
+
+// SealPreCommitPhase1WithCommD
+func SealPreCommitPhase1WithCommD(
+	proofType abi.RegisteredProof,
+	cacheDirPath string,
+	stagedSectorPath string,
+	sealedSectorPath string,
+	sectorNum abi.SectorNumber,
+	minerID abi.ActorID,
+	ticket abi.SealRandomness,
+	pieces []abi.PieceInfo,
+	phase1OutputPartial []byte,
 ) (phase1Output []byte, err error) {
 	sp, err := toFilRegisteredSealProof(proofType)
 	if err != nil {
@@ -277,7 +321,12 @@ func SealPreCommitPhase1(
 		return nil, err
 	}
 
-	resp := generated.FilSealPreCommitPhase1(sp, cacheDirPath, stagedSectorPath, sealedSectorPath, uint64(sectorNum), proverID, to32ByteArray(ticket), filPublicPieceInfos, filPublicPieceInfosLen)
+	var resp *generated.FilSealPreCommitPhase1Response
+	if len(phase1OutputPartial) == 0 {
+		resp = generated.FilSealPreCommitPhase1(sp, cacheDirPath, stagedSectorPath, sealedSectorPath, uint64(sectorNum), proverID, to32ByteArray(ticket), filPublicPieceInfos, filPublicPieceInfosLen)
+	} else {
+		resp = generated.FilSealPreCommitPhase1WithCommD(sp, cacheDirPath, stagedSectorPath, sealedSectorPath, uint64(sectorNum), proverID, to32ByteArray(ticket), filPublicPieceInfos, filPublicPieceInfosLen, string(phase1OutputPartial), uint(len(phase1OutputPartial)))
+	}
 	resp.Deref()
 
 	defer generated.FilDestroySealPreCommitPhase1Response(resp)
@@ -498,11 +547,14 @@ func GenerateWinningPoStSectorChallenge(
 	return out, nil
 }
 
+type NetReadCallback = generated.FilNetReadCallback
+
 // GenerateWinningPoSt
 func GenerateWinningPoSt(
 	minerID abi.ActorID,
 	privateSectorInfo SortedPrivateSectorInfo,
 	randomness abi.PoStRandomness,
+	netReadCallback NetReadCallback,
 ) ([]abi.PoStProof, error) {
 	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), "winning")
 	if err != nil {
@@ -519,6 +571,7 @@ func GenerateWinningPoSt(
 		to32ByteArray(randomness),
 		filReplicas, filReplicasLen,
 		proverID,
+		netReadCallback,
 	)
 	resp.Deref()
 	resp.ProofsPtr = make([]generated.FilPoStProof, resp.ProofsLen)
@@ -543,6 +596,7 @@ func GenerateWindowPoSt(
 	minerID abi.ActorID,
 	privateSectorInfo SortedPrivateSectorInfo,
 	randomness abi.PoStRandomness,
+	netReadCallback NetReadCallback,
 ) ([]abi.PoStProof, error) {
 	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), "window")
 	if err != nil {
@@ -555,7 +609,7 @@ func GenerateWindowPoSt(
 		return nil, err
 	}
 
-	resp := generated.FilGenerateWindowPost(to32ByteArray(randomness), filReplicas, filReplicasLen, proverID)
+	resp := generated.FilGenerateWindowPost(to32ByteArray(randomness), filReplicas, filReplicasLen, proverID, netReadCallback)
 	resp.Deref()
 	resp.ProofsPtr = make([]generated.FilPoStProof, resp.ProofsLen)
 	resp.Deref()

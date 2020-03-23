@@ -13,7 +13,6 @@ GENERATOR:
 
 PARSER:
   Defines:
-    __has_include_next(x): 1
   IncludePaths:
     - /usr/include
   SourcesPaths:
