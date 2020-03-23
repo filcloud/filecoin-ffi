@@ -447,6 +447,28 @@ code_and_message_impl!(fil_GenerateWindowPoStResponse);
 
 #[repr(C)]
 #[derive(DropStructMacro)]
+pub struct fil_PoStConfigResponse {
+    pub error_msg: *const libc::c_char,
+    pub challenge_count: libc::size_t,
+    pub sector_count: libc::size_t,
+    pub status_code: FCPResponseStatus,
+}
+
+impl Default for fil_PoStConfigResponse {
+    fn default() -> fil_PoStConfigResponse {
+        fil_PoStConfigResponse {
+            error_msg: ptr::null(),
+            challenge_count: 0,
+            sector_count: 0,
+            status_code: FCPResponseStatus::FCPNoError,
+        }
+    }
+}
+
+code_and_message_impl!(fil_PoStConfigResponse);
+
+#[repr(C)]
+#[derive(DropStructMacro)]
 pub struct fil_WriteWithAlignmentResponse {
     pub comm_p: [u8; 32],
     pub error_msg: *const libc::c_char,

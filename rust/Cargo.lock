@@ -119,8 +119,7 @@ dependencies = [
 [[package]]
 name = "bellperson"
 version = "0.14.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7edb7b07cab660137847825b90d1c88e82907689ee1e935eb2101579bc649e0a"
+source = "git+https://github.com/filcloud/bellman?branch=filcloud-26#8d53002eb55cbb0f96e3dc2aebf7b3c8740dca56"
 dependencies = [
  "bincode",
  "bit-vec",
@@ -824,8 +823,26 @@ dependencies = [
  "rayon",
  "rust-gpu-tools",
  "serde_json",
- "storage-proofs-porep",
+ "storage-proofs-porep 8.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile",
+]
+
+[[package]]
+name = "filecoin-hashers"
+version = "3.0.2"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25#517219eab59d0ce95dd2d3e918580dd74f1a0624"
+dependencies = [
+ "anyhow",
+ "bellperson",
+ "fff",
+ "generic-array 0.14.4",
+ "hex",
+ "lazy_static",
+ "merkletree",
+ "neptune",
+ "rand 0.7.3",
+ "serde",
+ "sha2 0.9.5",
 ]
 
 [[package]]
@@ -850,8 +867,7 @@ dependencies = [
 [[package]]
 name = "filecoin-proofs"
 version = "8.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e21d7e3bf0c9980c50f36c1e668a88796c34c5bf4dc4d0158af33d4f8a578d9"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25#517219eab59d0ce95dd2d3e918580dd74f1a0624"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -863,8 +879,8 @@ dependencies = [
  "byteorder 1.4.3",
  "fff",
  "fil_logger",
- "filecoin-hashers",
- "fr32",
+ "filecoin-hashers 3.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "fr32 1.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
  "generic-array 0.14.4",
  "groupy",
  "hex",
@@ -873,14 +889,15 @@ dependencies = [
  "log",
  "memmap",
  "merkletree",
+ "positioned-io",
  "rand 0.7.3",
  "rand_xorshift",
  "rayon",
  "serde",
  "serde_json",
  "sha2 0.9.5",
- "storage-proofs-core",
- "storage-proofs-porep",
+ "storage-proofs-core 8.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "storage-proofs-porep 8.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
  "storage-proofs-post",
  "typenum",
 ]
@@ -888,17 +905,16 @@ dependencies = [
 [[package]]
 name = "filecoin-proofs-api"
 version = "8.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81509cfc2486a67d850c3583576a49f251dc4e51fdfd6fac8bc1751341e64813"
+source = "git+https://github.com/filcloud/rust-filecoin-proofs-api.git?branch=filcloud-25#0903679a31d92145223230dcfc1d5546494b2987"
 dependencies = [
  "anyhow",
  "bellperson",
  "bincode",
- "filecoin-hashers",
+ "filecoin-hashers 3.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
  "filecoin-proofs",
- "fr32",
+ "fr32 1.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
  "serde",
- "storage-proofs-core",
+ "storage-proofs-core 8.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
 ]
 
 [[package]]
@@ -922,6 +938,19 @@ dependencies = [
  "log",
  "regex",
  "yansi",
+]
+
+[[package]]
+name = "fr32"
+version = "1.0.2"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25#517219eab59d0ce95dd2d3e918580dd74f1a0624"
+dependencies = [
+ "anyhow",
+ "bellperson",
+ "byte-slice-cast",
+ "byteorder 1.4.3",
+ "fff",
+ "thiserror",
 ]
 
 [[package]]
@@ -1224,8 +1253,7 @@ dependencies = [
 [[package]]
 name = "neptune"
 version = "3.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec660e9f6f2ff666996be8d34fa70142f05bf25b4268d0ab9f325d80378bf4e5"
+source = "git+https://github.com/filcloud/neptune?branch=filcloud-25#b2d2210131b178e56908336c080d445ca746f8b2"
 dependencies = [
  "bellperson",
  "blake2s_simd",
@@ -1853,6 +1881,21 @@ dependencies = [
 [[package]]
 name = "sha2raw"
 version = "3.0.2"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25#517219eab59d0ce95dd2d3e918580dd74f1a0624"
+dependencies = [
+ "block-buffer 0.9.0",
+ "byteorder 1.4.3",
+ "cpuid-bool",
+ "digest 0.9.0",
+ "fake-simd",
+ "lazy_static",
+ "opaque-debug 0.3.0",
+ "sha2-asm",
+]
+
+[[package]]
+name = "sha2raw"
+version = "3.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94fad39b7b5a95c5b6aa822d1b5a2246306ca8913084687cb5f03cd217ad2514"
 dependencies = [
@@ -1875,6 +1918,45 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "storage-proofs-core"
 version = "8.0.2"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25#517219eab59d0ce95dd2d3e918580dd74f1a0624"
+dependencies = [
+ "aes",
+ "anyhow",
+ "bellperson",
+ "blake2b_simd",
+ "blake2s_simd",
+ "block-modes",
+ "byteorder 1.4.3",
+ "config",
+ "fff",
+ "filecoin-hashers 3.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "fr32 1.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "fs2",
+ "generic-array 0.14.4",
+ "hex",
+ "itertools 0.9.0",
+ "lazy_static",
+ "libc",
+ "log",
+ "memmap",
+ "merkletree",
+ "neptune",
+ "num_cpus",
+ "rand 0.7.3",
+ "rand_chacha 0.2.2",
+ "rayon",
+ "semver",
+ "serde",
+ "serde_json",
+ "sha2 0.9.5",
+ "tempfile",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
+name = "storage-proofs-core"
+version = "8.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "21b6344ca35feeda13a5dbe282f00d85a0bb86bc6a78a619dc2858fe81ee2d9c"
 dependencies = [
@@ -1887,8 +1969,8 @@ dependencies = [
  "byteorder 1.4.3",
  "config",
  "fff",
- "filecoin-hashers",
- "fr32",
+ "filecoin-hashers 3.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "fr32 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "fs2",
  "generic-array 0.14.4",
  "hex",
@@ -1914,6 +1996,45 @@ dependencies = [
 [[package]]
 name = "storage-proofs-porep"
 version = "8.0.2"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25#517219eab59d0ce95dd2d3e918580dd74f1a0624"
+dependencies = [
+ "anyhow",
+ "bellperson",
+ "bincode",
+ "byte-slice-cast",
+ "byteorder 1.4.3",
+ "crossbeam 0.8.1",
+ "digest 0.9.0",
+ "fdlimit",
+ "fff",
+ "filecoin-hashers 3.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "fr32 1.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "generic-array 0.14.4",
+ "hex",
+ "hwloc",
+ "lazy_static",
+ "libc",
+ "log",
+ "mapr",
+ "merkletree",
+ "neptune",
+ "num-bigint 0.2.6",
+ "num-traits 0.2.14",
+ "num_cpus",
+ "pretty_assertions",
+ "rand 0.7.3",
+ "rayon",
+ "rust-gpu-tools",
+ "serde",
+ "serde_json",
+ "sha2 0.9.5",
+ "sha2raw 3.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "storage-proofs-core 8.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+]
+
+[[package]]
+name = "storage-proofs-porep"
+version = "8.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "191fd7c7a2743199263629d6dbd32c52db1a50430eca150c0345a20259649077"
 dependencies = [
@@ -1926,8 +2047,8 @@ dependencies = [
  "digest 0.9.0",
  "fdlimit",
  "fff",
- "filecoin-hashers",
- "fr32",
+ "filecoin-hashers 3.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "fr32 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "generic-array 0.14.4",
  "hex",
  "hwloc",
@@ -1946,15 +2067,14 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.9.5",
- "sha2raw",
- "storage-proofs-core",
+ "sha2raw 3.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "storage-proofs-core 8.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "storage-proofs-post"
 version = "8.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8379954982a7669bef1b272bef7d0158ae8edddaf60a83e31e142aabbce40935"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25#517219eab59d0ce95dd2d3e918580dd74f1a0624"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -1963,10 +2083,12 @@ dependencies = [
  "byteorder 1.4.3",
  "crossbeam 0.8.1",
  "fff",
- "filecoin-hashers",
- "fr32",
+ "filecoin-hashers 3.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
+ "fr32 1.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
  "generic-array 0.14.4",
  "hex",
+ "itertools 0.9.0",
+ "libc",
  "log",
  "merkletree",
  "neptune",
@@ -1974,8 +2096,9 @@ dependencies = [
  "rand 0.7.3",
  "rayon",
  "serde",
+ "serde_json",
  "sha2 0.9.5",
- "storage-proofs-core",
+ "storage-proofs-core 8.0.2 (git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-25)",
 ]
 
 [[package]]
