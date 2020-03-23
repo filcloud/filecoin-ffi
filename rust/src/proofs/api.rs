@@ -6,7 +6,7 @@ use filecoin_proofs_api::{
     PieceInfo, RegisteredPoStProof, RegisteredSealProof, SectorId, UnpaddedByteIndex,
     UnpaddedBytesAmount,
 };
-use log::info;
+use log::{info, warn};
 use std::mem;
 use std::path::PathBuf;
 use std::slice::from_raw_parts;
@@ -14,6 +14,7 @@ use std::slice::from_raw_parts;
 use super::helpers::{c_to_rust_post_proofs, to_private_replica_info_map};
 use super::types::*;
 use crate::util::api::init_log;
+use crate::proofs::helpers::to_private_replica_info_vec;
 
 /// TODO: document
 ///
@@ -179,6 +180,54 @@ pub unsafe extern "C" fn fil_fauxrep2(
     })
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn fil_generate_comm_d_tree(
+    registered_proof: fil_RegisteredSealProof,
+    cache_dir_path: *const libc::c_char,
+    staged_sector_path: *const libc::c_char,
+    pieces_ptr: *const fil_PublicPieceInfo,
+    pieces_len: libc::size_t,
+) -> *mut fil_SealPreCommitPhase1Response {
+    catch_panic_response(|| {
+        init_log();
+
+        info!("generate_comm_d_tree: start");
+
+        let public_pieces: Vec<PieceInfo> = from_raw_parts(pieces_ptr, pieces_len)
+            .iter()
+            .cloned()
+            .map(Into::into)
+            .collect();
+
+        let mut response: fil_SealPreCommitPhase1Response = Default::default();
+
+        let result = filecoin_proofs_api::seal::generate_comm_d_tree(
+            registered_proof.into(),
+            c_str_to_pbuf(cache_dir_path),
+            c_str_to_pbuf(staged_sector_path),
+            &public_pieces,
+        )
+            .and_then(|output| serde_json::to_vec(&output).map_err(Into::into));
+
+        match result {
+            Ok(output) => {
+                response.status_code = FCPResponseStatus::FCPNoError;
+                response.seal_pre_commit_phase1_output_ptr = output.as_ptr();
+                response.seal_pre_commit_phase1_output_len = output.len();
+                mem::forget(output);
+            }
+            Err(err) => {
+                response.status_code = FCPResponseStatus::FCPUnclassifiedError;
+                response.error_msg = rust_str_to_c_str(format!("{:?}", err));
+            }
+        }
+
+        info!("generate_comm_d_tree: finish");
+
+        raw_ptr(response)
+    })
+}
+
 /// TODO: document
 ///
 #[no_mangle]
@@ -217,6 +266,72 @@ pub unsafe extern "C" fn fil_seal_pre_commit_phase1(
             &public_pieces,
         )
         .and_then(|output| serde_json::to_vec(&output).map_err(Into::into));
+
+        match result {
+            Ok(output) => {
+                response.status_code = FCPResponseStatus::FCPNoError;
+                response.seal_pre_commit_phase1_output_ptr = output.as_ptr();
+                response.seal_pre_commit_phase1_output_len = output.len();
+                mem::forget(output);
+            }
+            Err(err) => {
+                response.status_code = FCPResponseStatus::FCPUnclassifiedError;
+                response.error_msg = rust_str_to_c_str(format!("{:?}", err));
+            }
+        }
+
+        info!("seal_pre_commit_phase1: finish");
+
+        raw_ptr(response)
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn fil_seal_pre_commit_phase1_with_comm_d(
+    registered_proof: fil_RegisteredSealProof,
+    cache_dir_path: *const libc::c_char,
+    staged_sector_path: *const libc::c_char,
+    sealed_sector_path: *const libc::c_char,
+    sector_id: u64,
+    prover_id: fil_32ByteArray,
+    ticket: fil_32ByteArray,
+    pieces_ptr: *const fil_PublicPieceInfo,
+    pieces_len: libc::size_t,
+    seal_pre_commit_phase1_output_ptr: *const u8,
+    seal_pre_commit_phase1_output_len: libc::size_t,
+) -> *mut fil_SealPreCommitPhase1Response {
+    catch_panic_response(|| {
+        init_log();
+
+        info!("seal_pre_commit_phase1: start");
+
+        let public_pieces: Vec<PieceInfo> = from_raw_parts(pieces_ptr, pieces_len)
+            .iter()
+            .cloned()
+            .map(Into::into)
+            .collect();
+
+        let phase_1_output = serde_json::from_slice(from_raw_parts(
+            seal_pre_commit_phase1_output_ptr,
+            seal_pre_commit_phase1_output_len,
+        )).map_err(Into::into);
+
+        let mut response: fil_SealPreCommitPhase1Response = Default::default();
+
+        let result = phase_1_output.and_then(|phase_1_output| {
+            filecoin_proofs_api::seal::seal_pre_commit_phase1_with_comm_d(
+                registered_proof.into(),
+                c_str_to_pbuf(cache_dir_path),
+                c_str_to_pbuf(staged_sector_path),
+                c_str_to_pbuf(sealed_sector_path),
+                prover_id.inner,
+                SectorId::from(sector_id),
+                ticket.inner,
+                &public_pieces,
+                phase_1_output,
+            )
+                .and_then(|output| serde_json::to_vec(&output).map_err(Into::into))
+        });
 
         match result {
             Ok(output) => {
@@ -568,16 +683,24 @@ pub unsafe extern "C" fn fil_generate_window_post(
     replicas_ptr: *const fil_PrivateReplicaInfo,
     replicas_len: libc::size_t,
     prover_id: fil_32ByteArray,
+    proofs_str: *const libc::c_char,
 ) -> *mut fil_GenerateWindowPoStResponse {
     catch_panic_response(|| {
         init_log();
 
         info!("generate_window_post: start");
 
+        let proofs_str = ffi_toolkit::c_str_to_rust_str(proofs_str).to_string();
+        let proofs_str = if !proofs_str.is_empty() {
+            Some(proofs_str)
+        } else {
+            None
+        };
+
         let mut response = fil_GenerateWindowPoStResponse::default();
 
         let result = to_private_replica_info_map(replicas_ptr, replicas_len).and_then(|rs| {
-            filecoin_proofs_api::post::generate_window_post(&randomness.inner, &rs, prover_id.inner)
+            filecoin_proofs_api::post::generate_window_post(&randomness.inner, &rs, prover_id.inner, proofs_str)
         });
 
         match result {
@@ -842,11 +965,19 @@ pub unsafe extern "C" fn fil_generate_winning_post(
     replicas_ptr: *const fil_PrivateReplicaInfo,
     replicas_len: libc::size_t,
     prover_id: fil_32ByteArray,
+    proofs_str: *const libc::c_char,
 ) -> *mut fil_GenerateWinningPoStResponse {
     catch_panic_response(|| {
         init_log();
 
         info!("generate_winning_post: start");
+
+        let proofs_str = ffi_toolkit::c_str_to_rust_str(proofs_str).to_string();
+        let proofs_str = if !proofs_str.is_empty() {
+            Some(proofs_str)
+        } else {
+            None
+        };
 
         let mut response = fil_GenerateWinningPoStResponse::default();
 
@@ -855,6 +986,7 @@ pub unsafe extern "C" fn fil_generate_winning_post(
                 &randomness.inner,
                 &rs,
                 prover_id.inner,
+                proofs_str,
             )
         });
 
@@ -888,6 +1020,79 @@ pub unsafe extern "C" fn fil_generate_winning_post(
         }
 
         info!("generate_winning_post: finish");
+
+        raw_ptr(response)
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn fil_post_config(
+    registered_proof: fil_RegisteredPoStProof,
+) -> *mut fil_PoStConfigResponse {
+    catch_panic_response(|| {
+        let result = filecoin_proofs_api::post::post_config(registered_proof.into());
+
+        let mut response = fil_PoStConfigResponse::default();
+
+        match result {
+            Ok(output) => {
+                response.status_code = FCPResponseStatus::FCPNoError;
+                response.challenge_count = output.0;
+                response.sector_count = output.1;
+            }
+            Err(err) => {
+                response.status_code = FCPResponseStatus::FCPUnclassifiedError;
+                response.error_msg = rust_str_to_c_str(format!("{:?}", err));
+            }
+        }
+
+        raw_ptr(response)
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn fil_tree_prove(
+    randomness: fil_32ByteArray,
+    replicas_ptr: *const fil_PrivateReplicaInfo,
+    replicas_len: libc::size_t,
+    j_ptr: *const u64,
+    j_len: libc::size_t,
+    i_ptr: *const u64,
+    i_len: libc::size_t,
+    num_sectors_per_chunk: u64,
+) -> *mut fil_StringResponse {
+    catch_panic_response(|| {
+        init_log();
+
+        let j: Vec<usize> = from_raw_parts(j_ptr, j_len).iter().map(|j| *j as usize).collect();
+        let i: Vec<usize> = from_raw_parts(i_ptr, i_len).iter().map(|i| *i as usize).collect();
+        let ji = j.iter().zip(i.iter()).map(|(j, i)| (*j, *i)).collect::<Vec<(usize, usize)>>();
+
+        warn!("tree_prove: start {}", ji.len());
+
+        let result = to_private_replica_info_vec(replicas_ptr, replicas_len).and_then(|rs| {
+            filecoin_proofs_api::post::tree_prove(
+                &randomness.inner,
+                &rs,
+                &ji,
+                num_sectors_per_chunk as usize,
+            )
+        });
+
+        warn!("tree_prove: finish {}", ji.len());
+
+        let mut response = fil_StringResponse::default();
+
+        match result {
+            Ok(output) => {
+                response.status_code = FCPResponseStatus::FCPNoError;
+                response.string_val = rust_str_to_c_str(output);
+            }
+            Err(err) => {
+                response.status_code = FCPResponseStatus::FCPUnclassifiedError;
+                response.error_msg = rust_str_to_c_str(format!("{:?}", err));
+            }
+        }
 
         raw_ptr(response)
     })
@@ -956,6 +1161,11 @@ pub unsafe extern "C" fn fil_destroy_generate_piece_commitment_response(
 pub unsafe extern "C" fn fil_destroy_generate_data_commitment_response(
     ptr: *mut fil_GenerateDataCommitmentResponse,
 ) {
+    let _ = Box::from_raw(ptr);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn fil_destroy_post_config_response(ptr: *mut fil_PoStConfigResponse) {
     let _ = Box::from_raw(ptr);
 }
 
@@ -1632,6 +1842,8 @@ pub mod tests {
                 private_replicas.as_ptr(),
                 private_replicas.len(),
                 prover_id,
+                |sector_id: u64, cache_id: *const libc::c_char, offset: u64, size: u64, buf: *mut libc::c_char| -> u64 { 0 },
+                |sector_id: u64, j: usize, i: usize, num_sectors_per_chunk: usize, randomness: *const libc::c_char, proof: *mut libc::c_char, proof_len: usize| -> usize { 0 },
             );
 
             if (*resp_h).status_code != FCPResponseStatus::FCPNoError {
@@ -1677,6 +1889,8 @@ pub mod tests {
                 private_replicas.as_ptr(),
                 private_replicas.len(),
                 prover_id,
+                |sector_id: u64, cache_id: *const libc::c_char, offset: u64, size: u64, buf: *mut libc::c_char| -> u64 { 0 },
+                |sector_id: u64, j: usize, i: usize, num_sectors_per_chunk: usize, randomness: *const libc::c_char, proof: *mut libc::c_char, proof_len: usize| -> usize { 0 },
             );
 
             if (*resp_j).status_code != FCPResponseStatus::FCPNoError {

@@ -90,11 +90,18 @@ func (s *SortedPublicSectorInfo) UnmarshalJSON(b []byte) error {
 // NewSortedPrivateSectorInfo returns a SortedPrivateSectorInfo
 func NewSortedPrivateSectorInfo(sectorInfo ...PrivateSectorInfo) SortedPrivateSectorInfo {
 	fn := func(i, j int) bool {
-		return bytes.Compare(sectorInfo[i].SealedCID.Bytes(), sectorInfo[j].SealedCID.Bytes()) == -1
+		// return bytes.Compare(sectorInfo[i].SealedCID.Bytes(), sectorInfo[j].SealedCID.Bytes()) == -1
+		return sectorInfo[i].SectorNumber < sectorInfo[j].SectorNumber
 	}
 
 	sort.Slice(sectorInfo[:], fn)
 
+	return SortedPrivateSectorInfo{
+		f: sectorInfo,
+	}
+}
+
+func NewPrivateSectorInfo(sectorInfo ...PrivateSectorInfo) SortedPrivateSectorInfo {
 	return SortedPrivateSectorInfo{
 		f: sectorInfo,
 	}
