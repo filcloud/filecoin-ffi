@@ -122,8 +122,7 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 [[package]]
 name = "bellperson"
 version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58dc83bfec3df87b46f14b01e0593a5144332ea4e712a68de2255694da755f87"
+source = "git+https://github.com/filcloud/bellman?branch=filcloud-25#f6784da04d2b5821ac650cbb5c40b37ca83d70c9"
 dependencies = [
  "bit-vec",
  "blake2s_simd",
@@ -142,7 +141,7 @@ dependencies = [
  "rand 0.7.3",
  "rand_core 0.5.1",
  "rayon",
- "rust-gpu-tools 0.2.2",
+ "rust-gpu-tools 0.3.0",
  "rustc-hash",
  "thiserror",
 ]
@@ -329,7 +328,7 @@ dependencies = [
  "quote 1.0.9",
  "serde",
  "serde_json",
- "syn 1.0.63",
+ "syn 1.0.64",
  "tempfile",
  "toml",
 ]
@@ -580,7 +579,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8f45d9ad417bcef4817d614a501ab55cdd96a6fdb24f49aab89a54acfd66b19"
 dependencies = [
  "quote 1.0.9",
- "syn 1.0.63",
+ "syn 1.0.64",
 ]
 
 [[package]]
@@ -683,7 +682,7 @@ checksum = "aa4da3c766cd7a0db8242e326e9e4e081edd567072893ed320008189715366a4"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.9",
- "syn 1.0.63",
+ "syn 1.0.64",
  "synstructure",
 ]
 
@@ -737,7 +736,7 @@ dependencies = [
  "num-traits 0.2.14",
  "proc-macro2 1.0.24",
  "quote 1.0.9",
- "syn 1.0.63",
+ "syn 1.0.64",
 ]
 
 [[package]]
@@ -820,8 +819,7 @@ dependencies = [
 [[package]]
 name = "filecoin-hashers"
 version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf565398110cc0d13cfa33e6fe35fd3931ead236705bfe65dd98de0648687fc6"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-24#084b652ba519d8e218e8655eb3697cd8706722d8"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -839,8 +837,7 @@ dependencies = [
 [[package]]
 name = "filecoin-proofs"
 version = "6.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f41847588c8f6513238613d651003ee53aede586e275113544c5f99b65131940"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-24#084b652ba519d8e218e8655eb3697cd8706722d8"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -862,6 +859,7 @@ dependencies = [
  "log",
  "memmap",
  "merkletree",
+ "positioned-io",
  "rand 0.7.3",
  "rand_xorshift",
  "rayon",
@@ -877,8 +875,7 @@ dependencies = [
 [[package]]
 name = "filecoin-proofs-api"
 version = "6.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a622e652d0e9d31cf9e64ec693497de794e1cb5a53b3ece2ea60880876a4635f"
+source = "git+https://github.com/filcloud/rust-filecoin-proofs-api.git?branch=filcloud-24#8bb612c439c3255ef21379910e218cef7aa655c4"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -906,8 +903,7 @@ dependencies = [
 [[package]]
 name = "fr32"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61435ec5a58135c51c94b7a6d62448392e9f77a3b9906b4f77c957a0286b6db0"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-24#084b652ba519d8e218e8655eb3697cd8706722d8"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -1107,9 +1103,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.88"
+version = "0.2.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03b07a082330a35e43f63177cc01689da34fbffa0105e1246cf0311472cac73a"
+checksum = "ba4aede83fc3617411dc6993bc8c70919750c1c257c6ca6a502aed6e0e2394ae"
 
 [[package]]
 name = "log"
@@ -1202,8 +1198,7 @@ dependencies = [
 [[package]]
 name = "neptune"
 version = "2.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6981728ae8254e8417f6c2f84ac83acdc31a567c9dc1344e30e5bbe916024e15"
+source = "git+https://github.com/filcloud/neptune?branch=filcloud-24#f19b06177840d895599c0d24384ab42e465f9595"
 dependencies = [
  "bellperson",
  "blake2s_simd",
@@ -1366,12 +1361,6 @@ checksum = "b4072920739958adeec5abedec51af70febc58f7fff0601aaa0827c1f3c8fefd"
 dependencies = [
  "num",
 ]
-
-[[package]]
-name = "once_cell"
-version = "1.7.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af8b08b04175473088b46763e51ee54da5f9a164bc162f615b91bc179dbf15a3"
 
 [[package]]
 name = "opaque-debug"
@@ -1687,21 +1676,20 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.4.3"
+version = "1.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9251239e129e16308e70d853559389de218ac275b515068abc96829d05b948a"
+checksum = "957056ecddbeba1b26965114e191d2e8589ce74db242b6ea25fc4062427a5c19"
 dependencies = [
  "aho-corasick",
  "memchr",
  "regex-syntax",
- "thread_local",
 ]
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.22"
+version = "0.6.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5eb417147ba9860a96cfe72a0b93bf88fee1744b5636ec99ab20c1aa9376581"
+checksum = "24d5f089152e60f62d28b835fbff2cd2e8dc0baf1ac13343bef92ab7eed84548"
 
 [[package]]
 name = "remove_dir_all"
@@ -1825,7 +1813,7 @@ checksum = "1800f7693e94e186f5e25a28291ae1570da908aff7d97a095dec1e56ff99069b"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.9",
- "syn 1.0.63",
+ "syn 1.0.64",
 ]
 
 [[package]]
@@ -1878,8 +1866,7 @@ dependencies = [
 [[package]]
 name = "sha2raw"
 version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e9ae672be1f15d562d77c473a5767343a6f437ba502b8da517e1ac0b412b75e"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-24#084b652ba519d8e218e8655eb3697cd8706722d8"
 dependencies = [
  "block-buffer 0.9.0",
  "byteorder 1.4.3",
@@ -1900,8 +1887,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "storage-proofs-core"
 version = "6.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79672ae7e4f2259ff49622d7179942fc68648886509b7cb3301a9487cd7fcfc8"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-24#084b652ba519d8e218e8655eb3697cd8706722d8"
 dependencies = [
  "aes",
  "anyhow",
@@ -1919,6 +1905,7 @@ dependencies = [
  "hex",
  "itertools 0.9.0",
  "lazy_static",
+ "libc",
  "log",
  "memmap",
  "merkletree",
@@ -1939,8 +1926,7 @@ dependencies = [
 [[package]]
 name = "storage-proofs-porep"
 version = "6.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19254773f548abbf17924c558017864ae15741459a4b5819d88ac9db244f9349"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-24#084b652ba519d8e218e8655eb3697cd8706722d8"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -1968,6 +1954,7 @@ dependencies = [
  "pretty_assertions",
  "rand 0.7.3",
  "rayon",
+ "rust-gpu-tools 0.3.0",
  "serde",
  "serde_json",
  "sha2 0.9.3",
@@ -1978,8 +1965,7 @@ dependencies = [
 [[package]]
 name = "storage-proofs-post"
 version = "6.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "deb7e3c02fe1b3867bfed65f651d5c5448b5d310d0f4aaf120b4d9adf26c42fa"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-24#084b652ba519d8e218e8655eb3697cd8706722d8"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -1992,6 +1978,8 @@ dependencies = [
  "fr32",
  "generic-array 0.14.4",
  "hex",
+ "itertools 0.9.0",
+ "libc",
  "log",
  "merkletree",
  "neptune",
@@ -1999,6 +1987,7 @@ dependencies = [
  "rand 0.7.3",
  "rayon",
  "serde",
+ "serde_json",
  "sha2 0.9.3",
  "storage-proofs-core",
 ]
@@ -2028,9 +2017,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.63"
+version = "1.0.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fd9bc7ccc2688b3344c2f48b9b546648b25ce0b20fc717ee7fa7981a8ca9717"
+checksum = "3fd9d1e9976102a03c542daa2eff1b43f9d72306342f3f8b3ed5fb8908195d6f"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.9",
@@ -2045,7 +2034,7 @@ checksum = "b834f2d66f734cb897113e34aaff2f1ab4719ca946f9a7358dba8f8064148701"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.9",
- "syn 1.0.63",
+ "syn 1.0.64",
  "unicode-xid 0.2.1",
 ]
 
@@ -2099,16 +2088,7 @@ checksum = "7765189610d8241a44529806d6fd1f2e0a08734313a35d5b3a556f92b381f3c0"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.9",
- "syn 1.0.63",
-]
-
-[[package]]
-name = "thread_local"
-version = "1.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8018d24e04c95ac8790716a5987d0fec4f8b27249ffa0f7d33f1369bdfb88cbd"
-dependencies = [
- "once_cell",
+ "syn 1.0.64",
 ]
 
 [[package]]
@@ -2141,9 +2121,9 @@ dependencies = [
 
 [[package]]
 name = "typenum"
-version = "1.12.0"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "373c8a200f9e67a0c95e62a4f52fbf80c23b4381c05a17845531982fa99e6b33"
+checksum = "879f6906492a7cd215bfa4cf595b600146ccfac0c79bcbd1f3000162af5e8b06"
 
 [[package]]
 name = "ucd-trie"
@@ -2177,9 +2157,9 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 
 [[package]]
 name = "version_check"
-version = "0.9.2"
+version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5a972e5669d67ba988ce3dc826706fb0a8b01471c088cb0b6110b805cc36aed"
+checksum = "5fecdca9a5291cc2b8dcf7dc02453fee791a280f3743cb0905f8822ae463b3fe"
 
 [[package]]
 name = "wasi"
@@ -2250,6 +2230,6 @@ checksum = "c3f369ddb18862aba61aa49bf31e74d29f0f162dec753063200e1dc084345d16"
 dependencies = [
  "proc-macro2 1.0.24",
  "quote 1.0.9",
- "syn 1.0.63",
+ "syn 1.0.64",
  "synstructure",
 ]
