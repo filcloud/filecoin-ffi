@@ -796,8 +796,7 @@ dependencies = [
 [[package]]
 name = "filecoin-proofs"
 version = "4.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b452e9ccddc7dcdb4e5b139092d049b448c1dad451e1835c8ad941cc3ad8ad3a"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-13#0fb9fd29a4defdbfa6016bb69678ba59e22bbb54"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -830,6 +829,7 @@ dependencies = [
  "paired",
  "pbr",
  "phase21",
+ "positioned-io",
  "rand 0.7.3",
  "rand_chacha",
  "rand_xorshift",
@@ -851,8 +851,7 @@ dependencies = [
 [[package]]
 name = "filecoin-proofs-api"
 version = "4.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff3e7829514fc351343d1bc5fd00d8b91b6a88ee75d074826c9bd07b9fdefa80"
+source = "git+https://github.com/filcloud/rust-filecoin-proofs-api.git?branch=filcloud-13#8de0169a5b7ddbf7a1ccbeb41a3bb5a36b58f417"
 dependencies = [
  "anyhow",
  "filecoin-proofs",
@@ -1370,8 +1369,7 @@ dependencies = [
 [[package]]
 name = "merkletree"
 version = "0.20.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02c04e256049462714b58755aeb618d684db4aec010d0b72ee0fc7f56bcc63e7"
+source = "git+https://github.com/filcloud/merkle_light?branch=filcloud-11#2e65b20d261b9aef1a8e0c6dd6ab344768da70cc"
 dependencies = [
  "anyhow",
  "arrayref",
@@ -2287,8 +2285,7 @@ dependencies = [
 [[package]]
 name = "sha2raw"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6067924a813cc16b4df9df5fde0d94bdcf441e49f0b0de52f4d0a89b6988893"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-13#0fb9fd29a4defdbfa6016bb69678ba59e22bbb54"
 dependencies = [
  "block-buffer",
  "digest",
@@ -2342,8 +2339,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "storage-proofs"
 version = "4.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6b3434dd7de25ec63925799a71456f4b89674a430900365c07e05605cf6886b"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-13#0fb9fd29a4defdbfa6016bb69678ba59e22bbb54"
 dependencies = [
  "storage-proofs-core",
  "storage-proofs-porep",
@@ -2353,8 +2349,7 @@ dependencies = [
 [[package]]
 name = "storage-proofs-core"
 version = "4.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b2ca9754cc550a3523d0b94a8c5fe2007e78c3c695edf358bfc61bc17b9f597"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-13#0fb9fd29a4defdbfa6016bb69678ba59e22bbb54"
 dependencies = [
  "aes",
  "anyhow",
@@ -2371,6 +2366,7 @@ dependencies = [
  "hex",
  "itertools 0.9.0",
  "lazy_static",
+ "libc",
  "log",
  "memmap",
  "merkletree",
@@ -2391,8 +2387,7 @@ dependencies = [
 [[package]]
 name = "storage-proofs-porep"
 version = "4.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b49d0b1cf21badabe42b76d60705c73e5759f86b35436f79c60bdb23a392d2fe"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-13#0fb9fd29a4defdbfa6016bb69678ba59e22bbb54"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -2422,8 +2417,7 @@ dependencies = [
 [[package]]
 name = "storage-proofs-post"
 version = "4.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41e0659dad068da1e16c78ca6f6dd03daa6ecc583bb49c2b05e897ca2cebd3f0"
+source = "git+https://github.com/filcloud/rust-fil-proofs?branch=filcloud-13#0fb9fd29a4defdbfa6016bb69678ba59e22bbb54"
 dependencies = [
  "anyhow",
  "bellperson",
@@ -2435,6 +2429,8 @@ dependencies = [
  "fil-sapling-crypto",
  "generic-array 0.13.2",
  "hex",
+ "itertools 0.9.0",
+ "libc",
  "log",
  "merkletree",
  "neptune",
@@ -2443,6 +2439,7 @@ dependencies = [
  "rand 0.7.3",
  "rayon",
  "serde",
+ "serde_json",
  "sha2ni",
  "storage-proofs-core",
 ]
