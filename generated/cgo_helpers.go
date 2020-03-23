@@ -3277,6 +3277,52 @@ func (x *FilPrivateReplicaInfo) Deref() {
 	x.SectorId = (uint64)(x.ref81a31e9b.sector_id)
 }
 
+func (x FilNetReadCallback) PassRef() (ref *C.fil_NetReadCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filNetReadCallbackEDA104B4Func == nil {
+		filNetReadCallbackEDA104B4Func = x
+	}
+	return (*C.fil_NetReadCallback)(C.fil_NetReadCallback_eda104b4), nil
+}
+
+func (x FilNetReadCallback) PassValue() (ref C.fil_NetReadCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filNetReadCallbackEDA104B4Func == nil {
+		filNetReadCallbackEDA104B4Func = x
+	}
+	return (C.fil_NetReadCallback)(C.fil_NetReadCallback_eda104b4), nil
+}
+
+func NewFilNetReadCallbackRef(ref unsafe.Pointer) *FilNetReadCallback {
+	return (*FilNetReadCallback)(ref)
+}
+
+//export filNetReadCallbackEDA104B4
+func filNetReadCallbackEDA104B4(csectorId C.uint64_t, ccacheId *C.char, coffset C.uint64_t, csize C.uint64_t, cbuf *C.char) C.uint64_t {
+	if filNetReadCallbackEDA104B4Func != nil {
+		sectorIdeda104b4 := (uint64)(csectorId)
+		cacheIdeda104b4 := packPCharString(ccacheId)
+		offseteda104b4 := (uint64)(coffset)
+		sizeeda104b4 := (uint64)(csize)
+		var bufeda104b4 []byte
+		hxf95e7c8 := (*sliceHeader)(unsafe.Pointer(&bufeda104b4))
+		hxf95e7c8.Data = unsafe.Pointer(cbuf)
+		hxf95e7c8.Cap = 0x7fffffff
+		// hxf95e7c8.Len = ?
+
+		reteda104b4 := filNetReadCallbackEDA104B4Func(sectorIdeda104b4, cacheIdeda104b4, offseteda104b4, sizeeda104b4, bufeda104b4)
+		ret, _ := (C.uint64_t)(reteda104b4), cgoAllocsUnknown
+		return ret
+	}
+	panic("callback func has not been set (race?)")
+}
+
+var filNetReadCallbackEDA104B4Func FilNetReadCallback
+
 // allocFilPublicReplicaInfoMemory allocates memory for type C.fil_PublicReplicaInfo in C.
 // The caller is responsible for freeing the this memory via C.free.
 func allocFilPublicReplicaInfoMemory(n int) unsafe.Pointer {

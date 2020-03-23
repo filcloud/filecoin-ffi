@@ -308,7 +308,10 @@ type FilPrivateReplicaInfo struct {
 	allocs81a31e9b  interface{}
 }
 
-// FilPublicReplicaInfo as declared in filecoin-ffi/filcrypto.h:271
+// FilNetReadCallback type as declared in filecoin-ffi/filcrypto.h:267
+type FilNetReadCallback func(sectorId uint64, cacheId string, offset uint64, size uint64, buf []byte) uint64
+
+// FilPublicReplicaInfo as declared in filecoin-ffi/filcrypto.h:273
 type FilPublicReplicaInfo struct {
 	RegisteredProof FilRegisteredPoStProof
 	CommR           [32]byte
