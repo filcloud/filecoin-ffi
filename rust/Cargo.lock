@@ -1235,7 +1235,7 @@ dependencies = [
 [[package]]
 name = "merkletree"
 version = "0.17.1"
-source = "git+https://github.com/filcloud/merkle_light?branch=filcloud-2#6bd422abebd2d7edcaae176bf72a0655e3cf02e3"
+source = "git+https://github.com/filcloud/merkle_light?branch=filcloud-2#65f9bcf2b54c1bceae8a8b543af0c92836b58a30"
 dependencies = [
  "anyhow 1.0.28 (registry+https://github.com/rust-lang/crates.io-index)",
  "arrayref 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
