@@ -650,6 +650,7 @@ pub unsafe extern "C" fn fil_generate_window_post(
     replicas_len: libc::size_t,
     prover_id: fil_32ByteArray,
     net_read: fil_NetReadCallback,
+    tree_cb: fil_MerkleTreeProofCallback,
 ) -> *mut fil_GenerateWindowPoStResponse {
     catch_panic_response(|| {
         init_log();
@@ -661,7 +662,7 @@ pub unsafe extern "C" fn fil_generate_window_post(
         let result = to_private_replica_info_map(replicas_ptr, replicas_len).and_then(|rs| {
             let mut net_reader = filecoin_proofs_api::post::NetReader::default();
             net_reader.net_read_cb = Some(net_read);
-            filecoin_proofs_api::post::generate_window_post(&randomness.inner, &rs, prover_id.inner, net_reader)
+            filecoin_proofs_api::post::generate_window_post(&randomness.inner, &rs, prover_id.inner, net_reader, Some(tree_cb))
         });
 
         match result {
@@ -863,6 +864,8 @@ pub unsafe extern "C" fn fil_clear_cache(
 
 pub type fil_NetReadCallback = fn(sector_id: u64, cache_id: *const libc::c_char, offset: u64, size: u64, buf: *mut libc::c_char) -> u64;
 
+pub type fil_MerkleTreeProofCallback = fn(sector_id: u64, j: usize, i: usize, num_sectors_per_chunk: usize, randomness: *const libc::c_char, proof: *mut libc::c_char, proof_len: usize) -> usize;
+
 /// TODO: document
 ///
 #[no_mangle]
@@ -916,6 +919,7 @@ pub unsafe extern "C" fn fil_generate_winning_post(
     replicas_len: libc::size_t,
     prover_id: fil_32ByteArray,
     net_read: fil_NetReadCallback,
+    tree_cb: fil_MerkleTreeProofCallback,
 ) -> *mut fil_GenerateWinningPoStResponse {
     catch_panic_response(|| {
         init_log();
@@ -932,6 +936,7 @@ pub unsafe extern "C" fn fil_generate_winning_post(
                 &rs,
                 prover_id.inner,
                 net_reader,
+                Some(tree_cb),
             )
         });
 
@@ -965,6 +970,49 @@ pub unsafe extern "C" fn fil_generate_winning_post(
         }
 
         info!("generate_winning_post: finish");
+
+        raw_ptr(response)
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn fil_tree_prove(
+    randomness: fil_32ByteArray,
+    replicas_ptr: *const fil_PrivateReplicaInfo,
+    replicas_len: libc::size_t,
+    j: usize,
+    i: usize,
+    num_sectors_per_chunk: usize,
+) -> *mut fil_StringResponse {
+    catch_panic_response(|| {
+        init_log();
+
+        info!("tree_prove: start {} {} {}", j, i, num_sectors_per_chunk);
+
+        let mut response = fil_StringResponse::default();
+
+        let result = to_private_replica_info_map(replicas_ptr, replicas_len).and_then(|rs| {
+            filecoin_proofs_api::post::tree_prove(
+                &randomness.inner,
+                &rs,
+                j,
+                i,
+                num_sectors_per_chunk,
+            )
+        });
+
+        match result {
+            Ok(output) => {
+                response.status_code = FCPResponseStatus::FCPNoError;
+                response.string_val = rust_str_to_c_str(output);
+            }
+            Err(err) => {
+                response.status_code = FCPResponseStatus::FCPUnclassifiedError;
+                response.error_msg = rust_str_to_c_str(format!("{:?}", err));
+            }
+        }
+
+        info!("tree_prove: finish {} {} {}", j, i, num_sectors_per_chunk);
 
         raw_ptr(response)
     })
@@ -1711,6 +1759,7 @@ pub mod tests {
                 private_replicas.len(),
                 prover_id,
                 |sector_id: u64, cache_id: *const libc::c_char, offset: u64, size: u64, buf: *mut libc::c_char| -> u64 { 0 },
+                |sector_id: u64, j: usize, i: usize, num_sectors_per_chunk: usize, randomness: *const libc::c_char, proof: *mut libc::c_char, proof_len: usize| -> usize { 0 },
             );
 
             if (*resp_h).status_code != FCPResponseStatus::FCPNoError {
@@ -1757,6 +1806,7 @@ pub mod tests {
                 private_replicas.len(),
                 prover_id,
                 |sector_id: u64, cache_id: *const libc::c_char, offset: u64, size: u64, buf: *mut libc::c_char| -> u64 { 0 },
+                |sector_id: u64, j: usize, i: usize, num_sectors_per_chunk: usize, randomness: *const libc::c_char, proof: *mut libc::c_char, proof_len: usize| -> usize { 0 },
             );
 
             if (*resp_j).status_code != FCPResponseStatus::FCPNoError {

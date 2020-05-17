@@ -8,3 +8,7 @@ unsigned long int fil_NetReadCallback_eda104b4(unsigned long int sector_id, char
 	return filNetReadCallbackEDA104B4(sector_id, cache_id, offset, size, buf);
 }
 
+unsigned long int fil_MerkleTreeProofCallback_19bb3bc0(unsigned long int sector_id, unsigned long int j, unsigned long int i, unsigned long int num_sectors_per_chunk, char* randomness, char* proof, unsigned long int proof_len) {
+	return filMerkleTreeProofCallback19BB3BC0(sector_id, j, i, num_sectors_per_chunk, randomness, proof, proof_len);
+}
+

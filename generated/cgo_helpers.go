@@ -3323,6 +3323,54 @@ func filNetReadCallbackEDA104B4(csectorId C.uint64_t, ccacheId *C.char, coffset 
 
 var filNetReadCallbackEDA104B4Func FilNetReadCallback
 
+func (x FilMerkleTreeProofCallback) PassRef() (ref *C.fil_MerkleTreeProofCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filMerkleTreeProofCallback19BB3BC0Func == nil {
+		filMerkleTreeProofCallback19BB3BC0Func = x
+	}
+	return (*C.fil_MerkleTreeProofCallback)(C.fil_MerkleTreeProofCallback_19bb3bc0), nil
+}
+
+func (x FilMerkleTreeProofCallback) PassValue() (ref C.fil_MerkleTreeProofCallback, allocs *cgoAllocMap) {
+	if x == nil {
+		return nil, nil
+	}
+	if filMerkleTreeProofCallback19BB3BC0Func == nil {
+		filMerkleTreeProofCallback19BB3BC0Func = x
+	}
+	return (C.fil_MerkleTreeProofCallback)(C.fil_MerkleTreeProofCallback_19bb3bc0), nil
+}
+
+func NewFilMerkleTreeProofCallbackRef(ref unsafe.Pointer) *FilMerkleTreeProofCallback {
+	return (*FilMerkleTreeProofCallback)(ref)
+}
+
+//export filMerkleTreeProofCallback19BB3BC0
+func filMerkleTreeProofCallback19BB3BC0(csectorId C.uint64_t, cj C.uintptr_t, ci C.uintptr_t, cnumSectorsPerChunk C.uintptr_t, crandomness *C.char, cproof *C.char, cproofLen C.uintptr_t) C.uintptr_t {
+	if filMerkleTreeProofCallback19BB3BC0Func != nil {
+		sectorId19bb3bc0 := (uint64)(csectorId)
+		j19bb3bc0 := (uint64)(cj)
+		i19bb3bc0 := (uint64)(ci)
+		numSectorsPerChunk19bb3bc0 := (uint64)(cnumSectorsPerChunk)
+		randomness19bb3bc0 := packPCharString(crandomness)
+		var proof19bb3bc0 []byte
+		hxff2234b := (*sliceHeader)(unsafe.Pointer(&proof19bb3bc0))
+		hxff2234b.Data = unsafe.Pointer(cproof)
+		hxff2234b.Cap = 0x7fffffff
+		// hxff2234b.Len = ?
+
+		proofLen19bb3bc0 := (uint64)(cproofLen)
+		ret19bb3bc0 := filMerkleTreeProofCallback19BB3BC0Func(sectorId19bb3bc0, j19bb3bc0, i19bb3bc0, numSectorsPerChunk19bb3bc0, randomness19bb3bc0, proof19bb3bc0, proofLen19bb3bc0)
+		ret, _ := (C.uintptr_t)(ret19bb3bc0), cgoAllocsUnknown
+		return ret
+	}
+	panic("callback func has not been set (race?)")
+}
+
+var filMerkleTreeProofCallback19BB3BC0Func FilMerkleTreeProofCallback
+
 // allocFilPublicReplicaInfoMemory allocates memory for type C.fil_PublicReplicaInfo in C.
 // The caller is responsible for freeing the this memory via C.free.
 func allocFilPublicReplicaInfoMemory(n int) unsafe.Pointer {

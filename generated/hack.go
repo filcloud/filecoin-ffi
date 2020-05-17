@@ -2,18 +2,19 @@ package generated
 
 import "sync"
 
-type netReadCallbackLocker struct {
+type globalCallbackLocker struct {
 	sync.Mutex
 }
 
-func (l *netReadCallbackLocker) Lock() {
+func (l *globalCallbackLocker) Lock() {
 	l.Mutex.Lock()
 	filNetReadCallbackEDA104B4Func = nil // enable its next reassignment in this lock
+	filMerkleTreeProofCallback19BB3BC0Func = nil // enable its next reassignment in this lock
 }
 
-func (l *netReadCallbackLocker) Unlock() {
+func (l *globalCallbackLocker) Unlock() {
 	l.Mutex.Unlock()
 }
 
-// Global lock for C function of FilNetReadCallback.
-var NetReadCallbackLocker netReadCallbackLocker
+// Global lock for C callback function.
+var GlobalCallbackLocker globalCallbackLocker

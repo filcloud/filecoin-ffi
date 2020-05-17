@@ -311,7 +311,10 @@ type FilPrivateReplicaInfo struct {
 // FilNetReadCallback type as declared in filecoin-ffi/filcrypto.h:270
 type FilNetReadCallback func(sectorId uint64, cacheId string, offset uint64, size uint64, buf []byte) uint64
 
-// FilPublicReplicaInfo as declared in filecoin-ffi/filcrypto.h:276
+// FilMerkleTreeProofCallback type as declared in filecoin-ffi/filcrypto.h:272
+type FilMerkleTreeProofCallback func(sectorId uint64, j uint64, i uint64, numSectorsPerChunk uint64, randomness string, proof []byte, proofLen uint64) uint64
+
+// FilPublicReplicaInfo as declared in filecoin-ffi/filcrypto.h:278
 type FilPublicReplicaInfo struct {
 	RegisteredProof FilRegisteredPoStProof
 	CommR           [32]byte

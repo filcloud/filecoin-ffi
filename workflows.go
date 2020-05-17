@@ -214,7 +214,7 @@ func WorkflowProofsLifecycle(t TestHelper) {
 		challengedSectors = append(challengedSectors, provingSet[indicesInProvingSet[idx]])
 	}
 
-	proofs, err := GenerateWinningPoSt(minerID, privateInfo, randomness[:], nil)
+	proofs, err := GenerateWinningPoSt(minerID, privateInfo, randomness[:], nil, nil)
 	t.RequireNoError(err)
 
 	isValid, err = VerifyWinningPoSt(abi.WinningPoStVerifyInfo{

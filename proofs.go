@@ -548,6 +548,41 @@ func GenerateWinningPoStSectorChallenge(
 }
 
 type NetReadCallback = generated.FilNetReadCallback
+type MerkleTreeProofCallback = generated.FilMerkleTreeProofCallback
+
+func TreeProve(
+	privateSectorInfo SortedPrivateSectorInfo,
+	randomness abi.PoStRandomness,
+	j, i, numSectorsPerChunk uint64,
+	isWinningPoSt bool,
+) (string, error) {
+	typ := "winning"
+	if !isWinningPoSt {
+		typ = "window"
+	}
+	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), typ)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to create private replica info array for FFI")
+	}
+	defer free()
+
+	resp := generated.FilTreeProve(
+		to32ByteArray(randomness),
+		filReplicas, filReplicasLen,
+		j,
+		i,
+		numSectorsPerChunk,
+	)
+	resp.Deref()
+
+	defer generated.FilDestroyStringResponse(resp)
+
+	if resp.StatusCode != generated.FCPResponseStatusFCPNoError {
+		return "", errors.New(generated.RawString(resp.ErrorMsg).Copy())
+	}
+
+	return generated.RawString(resp.StringVal).Copy(), nil
+}
 
 // GenerateWinningPoSt
 func GenerateWinningPoSt(
@@ -555,6 +590,7 @@ func GenerateWinningPoSt(
 	privateSectorInfo SortedPrivateSectorInfo,
 	randomness abi.PoStRandomness,
 	netReadCallback NetReadCallback,
+	merkleTreeProofCallback MerkleTreeProofCallback,
 ) ([]abi.PoStProof, error) {
 	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), "winning")
 	if err != nil {
@@ -572,6 +608,7 @@ func GenerateWinningPoSt(
 		filReplicas, filReplicasLen,
 		proverID,
 		netReadCallback,
+		merkleTreeProofCallback,
 	)
 	resp.Deref()
 	resp.ProofsPtr = make([]generated.FilPoStProof, resp.ProofsLen)
@@ -597,6 +634,7 @@ func GenerateWindowPoSt(
 	privateSectorInfo SortedPrivateSectorInfo,
 	randomness abi.PoStRandomness,
 	netReadCallback NetReadCallback,
+	merkleTreeProofCallback MerkleTreeProofCallback,
 ) ([]abi.PoStProof, error) {
 	filReplicas, filReplicasLen, free, err := toFilPrivateReplicaInfos(privateSectorInfo.Values(), "window")
 	if err != nil {
@@ -609,7 +647,7 @@ func GenerateWindowPoSt(
 		return nil, err
 	}
 
-	resp := generated.FilGenerateWindowPost(to32ByteArray(randomness), filReplicas, filReplicasLen, proverID, netReadCallback)
+	resp := generated.FilGenerateWindowPost(to32ByteArray(randomness), filReplicas, filReplicasLen, proverID, netReadCallback, merkleTreeProofCallback)
 	resp.Deref()
 	resp.ProofsPtr = make([]generated.FilPoStProof, resp.ProofsLen)
 	resp.Deref()
